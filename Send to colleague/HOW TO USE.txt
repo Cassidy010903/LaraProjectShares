@@ -1,0 +1,63 @@
+SULLY
+
+Setup: copy Sully.exe anywhere on your laptop (for example the Desktop) and double-click it.
+Nothing needs to be installed. Excel must be installed to open the result.
+If Windows says "Windows protected your PC", click "More info" and then "Run anyway".
+Your original files are never changed. The updated workbook is saved as a new file next to your workbook.
+
+EACH MONTH
+1. Choose this month's user list (the month and year are picked up from the file name).
+2. Choose the latest "2. Beperk Verhalings" workbook (last month's updated workbook).
+3. Optional: click "Add invoice PDFs..." and choose all the month's invoices (Canva, Adobe, Microsoft, Vodacom, OpenAI, Freshworks, ...).
+   The program reads the supplier, invoice number, date, currency, the Excl VAT / VAT / Incl VAT amounts and the licence types on the invoice,
+   and guesses the subscription. CHECK THE LIST. Double-click an invoice to change its subscription or amounts.
+4. Click "Create workbook". Read the "PLEASE CHECK" lines in the window.
+5. Open the new workbook "2. Beperk Verhalings <year> - <Month> <Year>.xlsx". Next month, use it as the latest workbook.
+
+WHAT YOU GET IN THE UPDATED WORKBOOK
+ - The month's user counts filled in on '2. Beperk Verhalings': the month's column on 'MS365 Totals', the SMA and Vleissentraal branch tables,
+   and the Adobe / Read AI / ChatGPT user counts and names on the '2026' sheet (when that month's blocks exist).
+ - For Adobe, Read AI and ChatGPT invoices: the invoice date and number on the '2026' sheet; for Adobe the unit prices; for ChatGPT / Read AI the
+   dollar total and the rand total. Dollar invoices from OpenAI show the converted VAT in rand on the invoice. The program uses that exchange rate
+   (rand VAT / dollar VAT) for every amount on the invoice, so the rand amounts are exact.
+ - New sheets for the month:
+     Summary <Mon Year>            : per business unit and branch, the users for Microsoft 365, Adobe, Read AI, Chat GPT, Fresh Service and Canva
+     Breakdown <Mon Year>          : the user count for every licence type per branch (plus the group totals)
+     Detailed Breakdown <Mon Year> : for every licence type: the count, the count x the price in the user list, and the names of the users
+     Invoice Split <Mon Year>      : every invoice divided over the business units and branches, per licence type, as Excl VAT, VAT and Incl VAT:
+                                     amount for the licence type x (users of the branch with that licence type / all users with that licence type).
+                                     Example: Adobe Pro amount / Pro users, Adobe Standard amount / Standard users. The amounts add up exactly to the invoices.
+                                     Parts of an invoice that cannot be linked to a licence type (e.g. Keepit, professional services) are divided over all seats of the subscription.
+     Invoices <Mon Year>           : the invoices that were used, with their amounts and whether they were used
+     Checks <Mon Year>             : the counts compared with last month and everything the program wants you to check
+The dates on the user list are never used. Only the number of users per licence type is used.
+A dollar invoice without a rand amount is split in dollars. For rand, double-click it, type the rand amounts and set the currency to ZAR.
+
+INVOICES FROM ANOTHER MONTH AND DOUBLE ENTRIES
+ - An uploaded invoice dated outside the selected month is NOT used (the "Used?" column shows "NO: other month"). Double-click it and tick "Use anyway" to include it.
+ - A Microsoft invoice typed on 'MS365 Fees' whose number is already in an EARLIER month is counted only once: the later row is set to zero in the new workbook
+   and the original typed amounts are kept in a note on that cell.
+ - The Vodacom invoice line "Office 365 Professional Services" is marked ASSUMED (see the window and the Invoices sheet).
+
+OTHER CHECKS (shown under "PLEASE CHECK" and on the Checks sheet)
+ - User counts that jump or drop compared with last month. Branches spelled differently under the same business unit (e.g. Noord Kaap / Noord-Kaap) are counted as one branch.
+ - Duplicate invoice numbers, amounts that do not add up, invoices typed on 'MS365 Fees' with no PDF, typed amounts that differ from the invoice.
+ - Adobe and OpenAI: the quantities on the invoices compared with the user list.
+ - 'MS365 Fees' dividing the month's invoices by a number that is not the seat count (only reported, not changed).
+ - One workbook formula IS corrected in the new copy: the USERS cost line on 'MS365 Totals' added a subtotal twice. Earlier months are untouched.
+
+NEW SUBSCRIPTIONS
+If a new subscription column is added to the user list (between the other licence columns and 'Business Unit', or at the very end filled with 1s),
+the program finds it automatically and adds it to the summary sheets (marked yellow). Put its price in the price row above the column heading to get its value.
+To split an invoice for it, choose its name in the Subscription box when you edit the invoice. It is not filled in on '2. Beperk Verhalings' until that part is added.
+
+Optional file (put next to the .exe if needed):
+ - branch_map.json : maps a new branch name for the 2. Beperk Verhalings step, e.g. {"Subtropico|SMA - Nelspruit": ["SMA", "PTA"]}
+
+THE RESULTS PANEL (right-hand side of the window)
+ - A banner shows whether the workbook was created and where it was saved.
+ - Overview: users, seats, branches, invoices used, and the seats per entity compared with last month.
+ - Please check: everything that needs a look, with a coloured label: CHECK, LEFT OUT (not used), ASSUMPTION, FIXED, PROBLEM.
+ - By branch: the users per business unit and branch for every subscription.
+ - Invoice split: what each invoice was divided into, and the Incl VAT amount per business unit and branch.
+ - Full report: the same information as plain text (handy to copy).
