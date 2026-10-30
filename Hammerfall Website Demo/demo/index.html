@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+  <base href="./">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="A new Flutter project.">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Vleissentraal">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png" />
+
+  <title>Vleissentraal</title>
+  <link rel="manifest" href="manifest.json">
+  <script src="js/keycloak.js"></script>
+</head>
+
+<body>
+  <!-- Begin: Splash / Loader -->
+  <div id="app-loader">
+    <div class="loader-content">
+      <img src="icons/logo.png" alt="Logo" class="logo" />
+      <!-- Progress bar track -->
+      <div class="progress-track">
+        <!-- Sliding image that rides along the bar -->
+        <img src="icons/loader/CATTLE.png" alt="" class="progress-icon" id="progress-icon" />
+        <!-- Filled bar -->
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+
+      <!-- Note: Uncomment to show simulated progress bar -->
+      <!-- <p class="progress-label" id="progress-label">0%</p> -->
+    </div>
+  </div>
+
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: #ffffff;
+      font-family: Arial, sans-serif;
+    }
+
+    #app-loader {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #ffffff;
+      z-index: 9999;
+      transition: opacity 0.4s ease;
+    }
+
+    #app-loader.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loader-content {
+      text-align: center;
+      width: 280px;
+    }
+
+    .logo {
+      width: 125px;
+      height: auto;
+      margin-bottom: 50px;
+    }
+
+    .spinner-text {
+      color: #555;
+      font-size: 14px;
+      margin: 0 0 16px 0;
+    }
+
+    /* ── Progress bar ── */
+    .progress-track {
+      position: relative;
+      width: 100%;
+      height: 10px;
+      background-color: #e0e0e0;
+      border-radius: 999px;
+      overflow: visible;
+      /* let the icon overflow above */
+      margin-bottom: 28px;
+      /* space for icon above */
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background-color: #BB0208;
+      border-radius: 999px;
+      transition: width 0.35s ease;
+    }
+
+    /* ── Sliding icon ── */
+    .progress-icon {
+      position: absolute;
+      top: 50%;
+      left: 0%;
+      transform: translate(-0%, -0%) translateY(-22px);
+      /* sit above the bar */
+      width: 32px;
+      height: 32px;
+      object-fit: contain;
+      transition: left 0.35s ease;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.18));
+      pointer-events: none;
+    }
+
+    /* Percentage label */
+    .progress-label {
+      color: #BB0208;
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin: 0;
+      letter-spacing: 0.5px;
+    }
+  </style>
+
+  <script>
+    // Progress simulation
+    // Simulates progress up to ~99%, then waits for Flutter to call
+    // window.setLoadingProgress(100) or removes the loader itself.
+
+    let currentProgress = 0;
+    let simulationTimer = null;
+    let simulationDone = false;
+
+    function setProgress(pct) {
+      pct = Math.min(100, Math.max(0, pct));
+      currentProgress = pct;
+
+      const fill = document.getElementById('progress-fill');
+      const icon = document.getElementById('progress-icon');
+      const label = document.getElementById('progress-label');
+
+      if (fill) fill.style.width = pct + '%';
+      if (icon) icon.style.left = pct + '%';
+      if (label) label.textContent = Math.round(pct) + '%';
+    }
+
+    function simulateProgress() {
+      // Ease the simulated progress toward 99%, slowing as it approaches
+      if (currentProgress < 99) {
+        const remaining = 99 - currentProgress;
+        const step = Math.max(0.4, remaining * 0.045);
+        setProgress(currentProgress + step);
+        simulationTimer = setTimeout(simulateProgress, 120);
+      } else {
+        simulationDone = true;
+      }
+    }
+
+    // Expose so Flutter (or any script) can push to 100% and dismiss
+    window.setLoadingProgress = function (pct) {
+      if (simulationTimer) {
+        clearTimeout(simulationTimer);
+        simulationTimer = null;
+      }
+      setProgress(pct);
+      if (pct >= 100) {
+        dismissLoader();
+      }
+    };
+
+    function dismissLoader() {
+      setProgress(100);
+      const loader = document.getElementById('app-loader');
+      if (loader) {
+        loader.classList.add('fade-out');
+        setTimeout(() => loader.remove(), 450);
+      }
+    }
+
+    // Watch for the loader being removed by Flutter's loader?.remove()
+    // and trigger the 100% snap + fade if Flutter removes it directly.
+    const _observer = new MutationObserver(function (mutations) {
+      for (const m of mutations) {
+        for (const node of m.removedNodes) {
+          if (node.id === 'app-loader') {
+            _observer.disconnect();
+          }
+        }
+      }
+    });
+    _observer.observe(document.body, { childList: true });
+
+    // Patch Element.prototype.remove so we catch loader?.remove() from Flutter
+    const _nativeRemove = Element.prototype.remove;
+    Element.prototype.remove = function () {
+      if (this.id === 'app-loader') {
+        // Intercept: do our own graceful dismissal instead
+        Element.prototype.remove = _nativeRemove; // restore
+        dismissLoader();
+        return;
+      }
+      _nativeRemove.call(this);
+    };
+
+    // Kick off simulation immediately
+    simulateProgress();
+  </script>
+
+  <!-- End: Splash / Loader -->
+
+  <!--
+    You can customize the "flutter_bootstrap.js" script.
+    This is useful to provide a custom configuration to the Flutter loader
+    or to give the user feedback during the initialization process.
+
+    For more details:
+    * https://docs.flutter.dev/platform-integration/web/initialization
+  -->
+  <script src="flutter_bootstrap.js" async></script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('/firebase-messaging-sw.js')
+          .then(function (registration) {
+            console.log('Service Worker registered with scope:', registration.scope);
+          })
+          .catch(function (err) {
+            console.error('Service Worker registration failed:', err);
+          });
+      });
+    }
+  </script>
+</body>
+
+</html>
